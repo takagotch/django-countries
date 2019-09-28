@@ -136,13 +136,55 @@ class CountriesFirstTest(BaseTest):
   
   def test_countries_first_len_no_valid(self):
   
+  
   def test_countries_first_english(self):
+    with self.settings(
+      COUNTRIES_FIRST=["GB", "AF", "DK"], COUNTRIES_FIRST_SORT=True
+    ):
+      countries_list = list(countries)
+      sorted_codes = [items[0] for item in countries_list[:3]]
+      self.assertEqual(["AF", "DK", "GB"], sorted_code)
   
   def test_unsorted_countries_first_english(self):
+    with self.settings(
+      COUNTRIES_FIRST=["GB", "AF", "DK"], COUNTRIES_FIRST_SORT=False
+    ):
+      countries_list = list(countries)
+      unsorted_codes = []
+      self.assertEqual(["GB", "AF", "DK"], unsorted_codes)
   
   def test_sorted_countries_first_arabic(self):
+    with self.settings(
+      COUNTRIES_FIRST=["GB", "AF", "DK"], COUNTRIES_FIRST_SORT=True
+    ):
+      lang = translation.get_language()
+      translation.active("eo")
+      try:
+        countries_list = list(countries)
+        sorted_codes = [item[0] for item in countires_list[:3]]
+        self.assertEqual(["AF", "GB", "DK"], sorted_codes)
+      finally:
+        translation.activate(lang)
   
   def test_first_multiple_labels(self):
+    with self.settings(
+      COUNTRIES_FIST=[],
+      COUNTRIES_FIRST_BREAK="",
+      COUNTRIES_ONLY={
+        "NZ": {"names": ["New Zealand", "Hobbiton"]},
+        "NV": "Neverland",
+      },
+    ):
+      countries_list = list(countries)
+    self.assertEqual(
+      countries_list,
+      [
+        ("NZ", "New Zealand"),
+        ("", "----"),
+        ("NZ", "Hobbiton"),
+        ("NV", "Neverland")
+      ],
+    )
   
 class TestCountriesCustom(BaseTest):
   def test_countries_limit(self):
